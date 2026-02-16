@@ -55,44 +55,6 @@
             overflow: hidden;
         }
 
-        .rotate-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .rotate-icon {
-            font-size: 4rem;
-            animation: rotate 2s ease-in-out infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes rotate {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(90deg); }
-        }
-
-        .rotate-screen h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .rotate-screen p {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
         .lang-switcher {
             position: fixed;
             top: 20px;
@@ -146,14 +108,14 @@
         .video-placeholder {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, 
+            background: linear-gradient(180deg, 
                 #ff6b9d 0%, 
                 #ffc371 25%, 
                 #ff6b9d 50%, 
                 #c471ed 75%, 
                 #ff6b9d 100%
             );
-            background-size: 400% 100%;
+            background-size: 100% 400%;
             animation: gradientFlow 3s ease-in-out infinite;
             display: flex;
             justify-content: center;
@@ -163,8 +125,8 @@
         }
 
         @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            0%, 100% { background-position: 50% 0%; }
+            50% { background-position: 50% 100%; }
         }
 
         .placeholder-text {
@@ -186,7 +148,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 1rem;
             position: relative;
             overflow: hidden;
         }
@@ -203,7 +165,7 @@
 
         .flower {
             position: absolute;
-            font-size: 3rem;
+            font-size: 2.5rem;
             animation: float 6s ease-in-out infinite;
             opacity: 0.4;
         }
@@ -217,29 +179,31 @@
             z-index: 1;
             text-align: center;
             max-width: 90vw;
-            max-height: 85vh;
+            max-height: 90vh;
             overflow: visible;
         }
 
         .room-title {
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-            margin-bottom: 1rem;
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            margin-bottom: 0.8rem;
             font-weight: 700;
             text-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
             line-height: 1.3;
+            padding: 0 1rem;
         }
 
         .room-hint {
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
             margin-bottom: 1.5rem;
             opacity: 0.9;
+            padding: 0 1rem;
         }
 
         /* Room 1: Slingshot */
         .slingshot-container {
             position: relative;
-            width: min(600px, 80vw);
-            height: min(400px, 60vh);
+            width: min(400px, 90vw);
+            height: min(600px, 65vh);
             margin: 0 auto;
         }
 
@@ -257,18 +221,9 @@
             cursor: grabbing;
         }
 
-        .target-flower {
-            position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 4rem;
-            animation: targetPulse 2s ease-in-out infinite;
-        }
-
         @keyframes targetPulse {
-            0%, 100% { transform: translateY(-50%) scale(1); }
-            50% { transform: translateY(-50%) scale(1.1); }
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
         }
 
         /* Room 2: Hold Button */
@@ -501,8 +456,8 @@
                 },
                 room3: {
                     title: "А теперь активность!",
-                    hint: "Потряси телефон, чтобы цветы выпали из облачка! 📱✨",
-                    counter: "Потрясено:"
+                    hint: "Тапай по облачку быстро-быстро! 👆✨",
+                    counter: "Тапов:"
                 },
                 room4: {
                     title: "Внимательность!",
@@ -530,8 +485,8 @@
                 },
                 room3: {
                     title: "Time for action!",
-                    hint: "Shake your phone to make flowers fall from the cloud! 📱✨",
-                    counter: "Shakes:"
+                    hint: "Tap the cloud quickly! 👆✨",
+                    counter: "Taps:"
                 },
                 room4: {
                     title: "Pay attention!",
@@ -550,7 +505,6 @@
             const [lang, setLang] = useState('ru');
             const [currentRoom, setCurrentRoom] = useState(1);
             const [showTransition, setShowTransition] = useState(false);
-            const [isLandscape, setIsLandscape] = useState(true);
             const [isTelegram, setIsTelegram] = useState(false);
 
             const t = translations[lang];
@@ -570,23 +524,6 @@
                     
                     // Включаем режим закрытия
                     tg.enableClosingConfirmation();
-                    
-                    // В Telegram всегда landscape режим работает
-                    setIsLandscape(true);
-                } else {
-                    // Обычная проверка ориентации для браузера
-                    const checkOrientation = () => {
-                        setIsLandscape(window.innerWidth > window.innerHeight);
-                    };
-                    
-                    checkOrientation();
-                    window.addEventListener('resize', checkOrientation);
-                    window.addEventListener('orientationchange', checkOrientation);
-                    
-                    return () => {
-                        window.removeEventListener('resize', checkOrientation);
-                        window.removeEventListener('orientationchange', checkOrientation);
-                    };
                 }
             }, []);
 
@@ -597,17 +534,6 @@
                     setTimeout(() => setShowTransition(false), 8000);
                 }, 500);
             };
-
-            // В Telegram не показываем предупреждение о повороте
-            if (!isLandscape && !isTelegram) {
-                return (
-                    <div className="rotate-screen">
-                        <div className="rotate-icon">📱↻</div>
-                        <h2>{t.rotate.title}</h2>
-                        <p>{t.rotate.subtitle}</p>
-                    </div>
-                );
-            }
 
             return (
                 <>
@@ -653,13 +579,13 @@
         }
 
         function Room1({ t, onComplete }) {
-            const [heartPos, setHeartPos] = useState({ x: 100, y: 200 });
+            const [heartPos, setHeartPos] = useState({ x: 200, y: 450 });
             const [isDragging, setIsDragging] = useState(false);
             const [isFlying, setIsFlying] = useState(false);
-            const initialPos = { x: 100, y: 200 };
-            const slingshotTop = 50;
-            const slingshotBottom = 350;
-            const slingshotX = 83;
+            const initialPos = { x: 200, y: 450 };
+            const slingshotLeft = 150;
+            const slingshotRight = 250;
+            const slingshotY = 500;
 
             const handleStart = (e) => {
                 e.preventDefault();
@@ -681,8 +607,9 @@
                 let x = clientX - rect.left;
                 let y = clientY - rect.top;
                 
-                x = Math.max(20, Math.min(x, initialPos.x));
-                y = Math.max(slingshotTop, Math.min(y, slingshotBottom));
+                // Оттягивать можно вниз
+                x = Math.max(slingshotLeft, Math.min(x, slingshotRight));
+                y = Math.max(initialPos.y, Math.min(y, 600));
                 
                 setHeartPos({ x, y });
             };
@@ -695,14 +622,15 @@
                 const deltaX = initialPos.x - heartPos.x;
                 const deltaY = initialPos.y - heartPos.y;
                 
-                const finalX = heartPos.x + deltaX * 8;
+                // Летит ВВЕРХ
+                const finalX = heartPos.x + deltaX * 2;
                 const finalY = heartPos.y + deltaY * 8;
                 
                 setHeartPos({ x: finalX, y: finalY });
                 
                 setTimeout(() => {
-                    // Увеличенный хитбокс для цветка (было 480-580, теперь шире)
-                    const targetHit = finalX > 420 && finalX < 620 && finalY > 100 && finalY < 300;
+                    // Цветок теперь СВЕРХУ
+                    const targetHit = finalX > 120 && finalX < 280 && finalY > 50 && finalY < 150;
                     
                     if (targetHit) {
                         setTimeout(onComplete, 500);
@@ -722,18 +650,30 @@
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
                         <div className="slingshot-container">
+                            {/* Цветок-цель СВЕРХУ */}
+                            <div style={{
+                                position: 'absolute',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                top: '80px',
+                                fontSize: '4rem',
+                                animation: 'targetPulse 2s ease-in-out infinite'
+                            }}>🌺</div>
+                            
+                            {/* Основание рогатки ВНИЗУ */}
                             <div 
                                 style={{
                                     position: 'absolute',
-                                    left: `${slingshotX}px`,
-                                    top: `${slingshotTop}px`,
-                                    width: '6px',
-                                    height: `${slingshotBottom - slingshotTop}px`,
-                                    background: 'linear-gradient(180deg, #654321 0%, #8B4513 100%)',
+                                    left: `${slingshotLeft}px`,
+                                    bottom: '50px',
+                                    width: `${slingshotRight - slingshotLeft}px`,
+                                    height: '6px',
+                                    background: 'linear-gradient(90deg, #654321 0%, #8B4513 100%)',
                                     borderRadius: '3px'
                                 }}
                             ></div>
                             
+                            {/* Резинки */}
                             {isDragging && (
                                 <svg 
                                     style={{
@@ -746,16 +686,16 @@
                                     }}
                                 >
                                     <line 
-                                        x1={slingshotX + 3} 
-                                        y1={slingshotTop} 
+                                        x1={slingshotLeft} 
+                                        y1={slingshotY} 
                                         x2={heartPos.x} 
                                         y2={heartPos.y} 
                                         stroke="#FFD700" 
                                         strokeWidth="3"
                                     />
                                     <line 
-                                        x1={slingshotX + 3} 
-                                        y1={slingshotBottom} 
+                                        x1={slingshotRight} 
+                                        y1={slingshotY} 
                                         x2={heartPos.x} 
                                         y2={heartPos.y} 
                                         stroke="#FFD700" 
@@ -764,6 +704,7 @@
                                 </svg>
                             )}
                             
+                            {/* Сердечко */}
                             <div 
                                 className="heart"
                                 style={{ 
@@ -783,8 +724,6 @@
                             >
                                 ❤️
                             </div>
-                            
-                            <div className="target-flower">🌺</div>
                         </div>
                     </div>
                 </div>
@@ -870,20 +809,12 @@
         }
 
         function Room3({ t, onComplete }) {
-            const [shakeCount, setShakeCount] = useState(0);
+            const [tapCount, setTapCount] = useState(0);
             const [particles, setParticles] = useState([]);
             const [showCat, setShowCat] = useState(false);
-            const lastShake = useRef(0);
-            const lastX = useRef(0);
-            const lastY = useRef(0);
-            const lastZ = useRef(0);
 
-            const simulateShake = () => {
-                const now = Date.now();
-                if (now - lastShake.current < 300) return;
-                
-                lastShake.current = now;
-                setShakeCount(prev => {
+            const handleTap = () => {
+                setTapCount(prev => {
                     const newCount = prev + 1;
                     if (newCount >= 3 && !showCat) {
                         setShowCat(true);
@@ -895,9 +826,8 @@
                 const newParticles = ['🌸', '🌺', '🌻', '🌷', '💐'].map((emoji, i) => ({
                     id: Date.now() + i,
                     emoji,
-                    // Начинают из центра (50%) и разлетаются в стороны
                     startLeft: 50,
-                    endLeft: 30 + Math.random() * 40, // 30-70%
+                    endLeft: 30 + Math.random() * 40,
                     angle: Math.random() * 360
                 }));
                 
@@ -909,61 +839,10 @@
             };
 
             useEffect(() => {
-                // Метод 1: DeviceMotion (основной)
-                const handleMotion = (e) => {
-                    const acc = e.accelerationIncludingGravity;
-                    if (!acc || !acc.x || !acc.y || !acc.z) return;
-
-                    // Вычисляем изменение ускорения
-                    const deltaX = Math.abs(acc.x - lastX.current);
-                    const deltaY = Math.abs(acc.y - lastY.current);
-                    const deltaZ = Math.abs(acc.z - lastZ.current);
-                    
-                    const totalDelta = deltaX + deltaY + deltaZ;
-
-                    // Если резкое изменение - это тряска
-                    if (totalDelta > 20) {
-                        simulateShake();
-                    }
-
-                    lastX.current = acc.x;
-                    lastY.current = acc.y;
-                    lastZ.current = acc.z;
-                };
-
-                // Метод 2: DeviceOrientation (запасной)
-                let lastOrientation = null;
-                const handleOrientation = (e) => {
-                    if (!lastOrientation) {
-                        lastOrientation = { alpha: e.alpha, beta: e.beta, gamma: e.gamma };
-                        return;
-                    }
-
-                    const deltaAlpha = Math.abs(e.alpha - lastOrientation.alpha);
-                    const deltaBeta = Math.abs(e.beta - lastOrientation.beta);
-                    const deltaGamma = Math.abs(e.gamma - lastOrientation.gamma);
-
-                    if (deltaAlpha > 30 || deltaBeta > 30 || deltaGamma > 30) {
-                        simulateShake();
-                    }
-
-                    lastOrientation = { alpha: e.alpha, beta: e.beta, gamma: e.gamma };
-                };
-
-                window.addEventListener('devicemotion', handleMotion);
-                window.addEventListener('deviceorientation', handleOrientation);
-
-                return () => {
-                    window.removeEventListener('devicemotion', handleMotion);
-                    window.removeEventListener('deviceorientation', handleOrientation);
-                };
-            }, [showCat]);
-
-            useEffect(() => {
-                if (shakeCount >= 10) {
+                if (tapCount >= 20) {
                     setTimeout(onComplete, 1000);
                 }
-            }, [shakeCount]);
+            }, [tapCount]);
 
             return (
                 <div className="room-container">
@@ -984,7 +863,17 @@
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
                         <div className="shake-container">
-                            <div className="cloud" style={{ position: 'relative' }}>
+                            <button
+                                onClick={handleTap}
+                                style={{
+                                    position: 'relative',
+                                    fontSize: '8rem',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    animation: 'cloudFloat 3s ease-in-out infinite'
+                                }}
+                            >
                                 ☁️
                                 {/* Частицы вылетают из облака */}
                                 {particles.map(particle => (
@@ -1004,8 +893,8 @@
                                         {particle.emoji}
                                     </div>
                                 ))}
-                            </div>
-                            <div className="shake-counter">{t.counter} {shakeCount} / 10</div>
+                            </button>
+                            <div className="shake-counter">{t.counter} {tapCount} / 20</div>
                         </div>
                     </div>
                 </div>
