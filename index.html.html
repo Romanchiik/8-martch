@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>С 8 Марта! 🌸</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0a1128 0%, #1a2456 50%, #2d3561 100%);
+            color: white;
+            touch-action: none;
+        }
+
+        #root {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .rotate-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .rotate-icon {
+            font-size: 4rem;
+            animation: rotate 2s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+
+        .rotate-screen h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rotate-screen p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 8px 16px;
+            display: flex;
+            gap: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 15px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .lang-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .video-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999;
+            background: #0a1128;
+        }
+
+        .video-transition video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                #ff6b9d 0%, 
+                #ffc371 25%, 
+                #ff6b9d 50%, 
+                #c471ed 75%, 
+                #ff6b9d 100%
+            );
+            background-size: 400% 100%;
+            animation: gradientFlow 3s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .placeholder-text {
+            font-size: 2rem;
+            font-family: 'Pacifico', cursive;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .room-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .flower {
+            position: absolute;
+            font-size: 3rem;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .room-content {
+            z-index: 1;
+            text-align: center;
+            max-width: 90vw;
+            max-height: 85vh;
+            overflow: visible;
+        }
+
+        .room-title {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+            line-height: 1.3;
+        }
+
+        .room-hint {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Room 1: Slingshot */
+        .slingshot-container {
+            position: relative;
+            width: min(600px, 80vw);
+            height: min(400px, 60vh);
+            margin: 0 auto;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 3rem;
+            cursor: grab;
+            user-select: none;
+            filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.8));
+            z-index: 10;
+            touch-action: none;
+        }
+
+        .heart:active {
+            cursor: grabbing;
+        }
+
+        .target-flower {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 4rem;
+            animation: targetPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes targetPulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+        }
+
+        /* Room 2: Hold Button */
+        .hold-button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .hold-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d, #ffc371);
+            border: none;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.5);
+            position: relative;
+        }
+
+        .hold-button:active {
+            transform: scale(0.95);
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 220px;
+            height: 220px;
+        }
+
+        .progress-ring-circle {
+            stroke: #FFD700;
+            stroke-width: 8;
+            fill: none;
+            stroke-dasharray: 691.15;
+            stroke-dashoffset: 691.15;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        /* Room 3: Shake Phone */
+        .shake-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cloud {
+            font-size: 8rem;
+            position: relative;
+            animation: cloudFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes cloudFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes fall {
+            from {
+                top: 30%;
+                opacity: 1;
+                transform: rotate(0deg);
+            }
+            to {
+                top: 90%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fallFromCloud {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--end-x)), 60vh) rotate(var(--rotation));
+                opacity: 0;
+            }
+        }
+
+        .shake-counter {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFD700;
+        }
+
+        /* Room 4: Find Button */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .game-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            border: none;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .game-button.wrong {
+            animation: wiggle 0.5s ease-in-out;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+
+        .game-button.correct {
+            background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+            animation: correctPulse 0.5s ease-in-out;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8) !important;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Room 5: Final */
+        .final-flower {
+            font-size: 10rem;
+            cursor: pointer;
+            animation: finalFlowerGrow 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 107, 157, 0.8));
+        }
+
+        @keyframes finalFlowerGrow {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .final-message {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            margin-top: 2rem;
+            text-shadow: 0 0 30px rgba(255, 107, 157, 0.8);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff6b9d;
+            animation: confettiFall 3s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes confettiFall {
+            from {
+                top: -10px;
+                opacity: 1;
+                transform: rotate(0deg);
+            }
+            to {
+                top: 100vh;
+                opacity: 0;
+                transform: rotate(720deg);
+            }
+        }
+
+        @keyframes catAppear {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const translations = {
+            ru: {
+                rotate: {
+                    title: "Поверни экран!",
+                    subtitle: "Поверни телефон горизонтально для лучшего опыта"
+                },
+                room1: {
+                    title: "Привет! Добро пожаловать на мой поздравительный сайт-открытку! 💝",
+                    hint: "Оттяни сердечко и попади в цветок, чтобы продолжить!"
+                },
+                room2: {
+                    title: "Теперь немного терпения!",
+                    hint: "Удержи этот цветочек ровно 3 секунды. Не промахнись! ⏱️"
+                },
+                room3: {
+                    title: "А теперь активность!",
+                    hint: "Потряси телефон, чтобы цветы выпали из облачка! 📱✨",
+                    counter: "Потрясено:"
+                },
+                room4: {
+                    title: "Внимательность!",
+                    hint: "Найди ту самую кнопку... Подсказка: она самая яркая 🌟"
+                },
+                room5: {
+                    title: "🌸 С 8 МАРТА, ЛЮБИМАЯ! 🌸",
+                    subtitle: "Спасибо, что прошла все испытания!",
+                    message: "Ты самая терпеливая, внимательная и милая 💕",
+                    love: "Люблю тебя! 🐱✨"
+                }
+            },
+            en: {
+                rotate: {
+                    title: "Rotate Your Screen!",
+                    subtitle: "Please rotate your phone horizontally for the best experience"
+                },
+                room1: {
+                    title: "Hello! Welcome to my greeting card website! 💝",
+                    hint: "Pull the heart and hit the flower to continue!"
+                },
+                room2: {
+                    title: "Now, a bit of patience!",
+                    hint: "Hold this flower for exactly 3 seconds. Don't miss! ⏱️"
+                },
+                room3: {
+                    title: "Time for action!",
+                    hint: "Shake your phone to make flowers fall from the cloud! 📱✨",
+                    counter: "Shakes:"
+                },
+                room4: {
+                    title: "Pay attention!",
+                    hint: "Find the right button... Hint: it's the brightest one 🌟"
+                },
+                room5: {
+                    title: "🌸 HAPPY MARCH 8TH, MY LOVE! 🌸",
+                    subtitle: "Thank you for completing all the challenges!",
+                    message: "You're the most patient, attentive, and sweet 💕",
+                    love: "I love you! 🐱✨"
+                }
+            }
+        };
+
+        function App() {
+            const [lang, setLang] = useState('ru');
+            const [currentRoom, setCurrentRoom] = useState(1);
+            const [showTransition, setShowTransition] = useState(false);
+            const [isLandscape, setIsLandscape] = useState(true);
+
+            const t = translations[lang];
+
+            useEffect(() => {
+                const checkOrientation = () => {
+                    setIsLandscape(window.innerWidth > window.innerHeight);
+                };
+                
+                checkOrientation();
+                window.addEventListener('resize', checkOrientation);
+                window.addEventListener('orientationchange', checkOrientation);
+                
+                return () => {
+                    window.removeEventListener('resize', checkOrientation);
+                    window.removeEventListener('orientationchange', checkOrientation);
+                };
+            }, []);
+
+            const goToNextRoom = () => {
+                setShowTransition(true);
+                setTimeout(() => {
+                    setCurrentRoom(currentRoom + 1);
+                    setTimeout(() => setShowTransition(false), 8000);
+                }, 500);
+            };
+
+            if (!isLandscape) {
+                return (
+                    <div className="rotate-screen">
+                        <div className="rotate-icon">📱↻</div>
+                        <h2>{t.rotate.title}</h2>
+                        <p>{t.rotate.subtitle}</p>
+                    </div>
+                );
+            }
+
+            return (
+                <>
+                    {currentRoom === 1 && (
+                        <div className="lang-switcher">
+                            <button 
+                                className={`lang-btn ${lang === 'ru' ? 'active' : ''}`}
+                                onClick={() => setLang('ru')}
+                            >
+                                🇷🇺 RU
+                            </button>
+                            <button 
+                                className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+                                onClick={() => setLang('en')}
+                            >
+                                🇬🇧 EN
+                            </button>
+                        </div>
+                    )}
+
+                    {showTransition && <VideoTransition roomNumber={currentRoom} />}
+                    
+                    {!showTransition && currentRoom === 1 && <Room1 t={t.room1} onComplete={goToNextRoom} />}
+                    {!showTransition && currentRoom === 2 && <Room2 t={t.room2} onComplete={goToNextRoom} />}
+                    {!showTransition && currentRoom === 3 && <Room3 t={t.room3} onComplete={goToNextRoom} />}
+                    {!showTransition && currentRoom === 4 && <Room4 t={t.room4} onComplete={goToNextRoom} />}
+                    {!showTransition && currentRoom === 5 && <Room5 t={t.room5} />}
+                </>
+            );
+        }
+
+        function VideoTransition({ roomNumber }) {
+            return (
+                <div className="video-transition">
+                    <div className="video-placeholder">
+                        <div className="placeholder-text">🌸 ✨ 💕</div>
+                        <div style={{ marginTop: '1rem', fontSize: '1.2rem', opacity: 0.8 }}>
+                            Transition {roomNumber} (8 sec)
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function Room1({ t, onComplete }) {
+            const [heartPos, setHeartPos] = useState({ x: 100, y: 200 });
+            const [isDragging, setIsDragging] = useState(false);
+            const [isFlying, setIsFlying] = useState(false);
+            const initialPos = { x: 100, y: 200 };
+            const slingshotTop = 50;
+            const slingshotBottom = 350;
+            const slingshotX = 83;
+
+            const handleStart = (e) => {
+                e.preventDefault();
+                if (isFlying) return;
+                setIsDragging(true);
+            };
+
+            const handleMove = (e) => {
+                if (!isDragging || isFlying) return;
+                e.preventDefault();
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const container = document.querySelector('.slingshot-container');
+                if (!container) return;
+                
+                const rect = container.getBoundingClientRect();
+                let x = clientX - rect.left;
+                let y = clientY - rect.top;
+                
+                x = Math.max(20, Math.min(x, initialPos.x));
+                y = Math.max(slingshotTop, Math.min(y, slingshotBottom));
+                
+                setHeartPos({ x, y });
+            };
+
+            const handleEnd = () => {
+                if (!isDragging || isFlying) return;
+                setIsDragging(false);
+                setIsFlying(true);
+                
+                const deltaX = initialPos.x - heartPos.x;
+                const deltaY = initialPos.y - heartPos.y;
+                
+                const finalX = heartPos.x + deltaX * 8;
+                const finalY = heartPos.y + deltaY * 8;
+                
+                setHeartPos({ x: finalX, y: finalY });
+                
+                setTimeout(() => {
+                    // Увеличенный хитбокс для цветка (было 480-580, теперь шире)
+                    const targetHit = finalX > 420 && finalX < 620 && finalY > 100 && finalY < 300;
+                    
+                    if (targetHit) {
+                        setTimeout(onComplete, 500);
+                    } else {
+                        setTimeout(() => {
+                            setHeartPos(initialPos);
+                            setIsFlying(false);
+                        }, 500);
+                    }
+                }, 600);
+            };
+
+            return (
+                <div className="room-container">
+                    <BackgroundFlowers seed={1} />
+                    <div className="room-content">
+                        <h1 className="room-title">{t.title}</h1>
+                        <p className="room-hint">{t.hint}</p>
+                        <div className="slingshot-container">
+                            <div 
+                                style={{
+                                    position: 'absolute',
+                                    left: `${slingshotX}px`,
+                                    top: `${slingshotTop}px`,
+                                    width: '6px',
+                                    height: `${slingshotBottom - slingshotTop}px`,
+                                    background: 'linear-gradient(180deg, #654321 0%, #8B4513 100%)',
+                                    borderRadius: '3px'
+                                }}
+                            ></div>
+                            
+                            {isDragging && (
+                                <svg 
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        pointerEvents: 'none'
+                                    }}
+                                >
+                                    <line 
+                                        x1={slingshotX + 3} 
+                                        y1={slingshotTop} 
+                                        x2={heartPos.x} 
+                                        y2={heartPos.y} 
+                                        stroke="#FFD700" 
+                                        strokeWidth="3"
+                                    />
+                                    <line 
+                                        x1={slingshotX + 3} 
+                                        y1={slingshotBottom} 
+                                        x2={heartPos.x} 
+                                        y2={heartPos.y} 
+                                        stroke="#FFD700" 
+                                        strokeWidth="3"
+                                    />
+                                </svg>
+                            )}
+                            
+                            <div 
+                                className="heart"
+                                style={{ 
+                                    left: `${heartPos.x - 25}px`, 
+                                    top: `${heartPos.y - 25}px`,
+                                    transition: isFlying ? 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none',
+                                    cursor: isDragging ? 'grabbing' : 'grab',
+                                    zIndex: 10
+                                }}
+                                onMouseDown={handleStart}
+                                onMouseMove={handleMove}
+                                onMouseUp={handleEnd}
+                                onMouseLeave={handleEnd}
+                                onTouchStart={handleStart}
+                                onTouchMove={handleMove}
+                                onTouchEnd={handleEnd}
+                            >
+                                ❤️
+                            </div>
+                            
+                            <div className="target-flower">🌺</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function Room2({ t, onComplete }) {
+            const [holding, setHolding] = useState(false);
+            const [progress, setProgress] = useState(0);
+            const [timer, setTimer] = useState(0);
+
+            useEffect(() => {
+                if (!holding) {
+                    setProgress(0);
+                    setTimer(0);
+                    return;
+                }
+
+                const interval = setInterval(() => {
+                    setProgress(prev => {
+                        const newProgress = prev + 1;
+                        setTimer(newProgress / 100 * 3);
+                        
+                        if (newProgress >= 100) {
+                            clearInterval(interval);
+                            setTimeout(onComplete, 500);
+                        }
+                        
+                        return Math.min(newProgress, 100);
+                    });
+                }, 30);
+
+                return () => clearInterval(interval);
+            }, [holding]);
+
+            const handleStart = (e) => {
+                e.preventDefault();
+                setHolding(true);
+            };
+
+            const handleEnd = (e) => {
+                e.preventDefault();
+                setHolding(false);
+            };
+
+            const circumference = 2 * Math.PI * 105;
+            const offset = circumference - (progress / 100) * circumference;
+
+            return (
+                <div className="room-container">
+                    <BackgroundFlowers seed={2} />
+                    <div className="room-content">
+                        <h1 className="room-title">{t.title}</h1>
+                        <p className="room-hint">{t.hint}</p>
+                        <div className="hold-button-container">
+                            <div className="timer-display">{timer.toFixed(1)}s</div>
+                            <div style={{ position: 'relative' }}>
+                                <svg className="progress-ring" viewBox="0 0 220 220" style={{ overflow: 'visible' }}>
+                                    <circle
+                                        className="progress-ring-circle"
+                                        cx="110"
+                                        cy="110"
+                                        r="105"
+                                        style={{ strokeDashoffset: offset }}
+                                    />
+                                </svg>
+                                <button 
+                                    className="hold-button"
+                                    onMouseDown={handleStart}
+                                    onMouseUp={handleEnd}
+                                    onMouseLeave={handleEnd}
+                                    onTouchStart={handleStart}
+                                    onTouchEnd={handleEnd}
+                                    onContextMenu={(e) => e.preventDefault()}
+                                >
+                                    🌸
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function Room3({ t, onComplete }) {
+            const [shakeCount, setShakeCount] = useState(0);
+            const [particles, setParticles] = useState([]);
+            const [showCat, setShowCat] = useState(false);
+            const lastShake = useRef(0);
+            const lastX = useRef(0);
+            const lastY = useRef(0);
+            const lastZ = useRef(0);
+
+            const simulateShake = () => {
+                const now = Date.now();
+                if (now - lastShake.current < 300) return;
+                
+                lastShake.current = now;
+                setShakeCount(prev => {
+                    const newCount = prev + 1;
+                    if (newCount >= 3 && !showCat) {
+                        setShowCat(true);
+                    }
+                    return newCount;
+                });
+                
+                // Частицы вылетают ИЗ ЦЕНТРА облака
+                const newParticles = ['🌸', '🌺', '🌻', '🌷', '💐'].map((emoji, i) => ({
+                    id: Date.now() + i,
+                    emoji,
+                    // Начинают из центра (50%) и разлетаются в стороны
+                    startLeft: 50,
+                    endLeft: 30 + Math.random() * 40, // 30-70%
+                    angle: Math.random() * 360
+                }));
+                
+                setParticles(prev => [...prev, ...newParticles]);
+                
+                setTimeout(() => {
+                    setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
+                }, 2000);
+            };
+
+            useEffect(() => {
+                // Метод 1: DeviceMotion (основной)
+                const handleMotion = (e) => {
+                    const acc = e.accelerationIncludingGravity;
+                    if (!acc || !acc.x || !acc.y || !acc.z) return;
+
+                    // Вычисляем изменение ускорения
+                    const deltaX = Math.abs(acc.x - lastX.current);
+                    const deltaY = Math.abs(acc.y - lastY.current);
+                    const deltaZ = Math.abs(acc.z - lastZ.current);
+                    
+                    const totalDelta = deltaX + deltaY + deltaZ;
+
+                    // Если резкое изменение - это тряска
+                    if (totalDelta > 20) {
+                        simulateShake();
+                    }
+
+                    lastX.current = acc.x;
+                    lastY.current = acc.y;
+                    lastZ.current = acc.z;
+                };
+
+                // Метод 2: DeviceOrientation (запасной)
+                let lastOrientation = null;
+                const handleOrientation = (e) => {
+                    if (!lastOrientation) {
+                        lastOrientation = { alpha: e.alpha, beta: e.beta, gamma: e.gamma };
+                        return;
+                    }
+
+                    const deltaAlpha = Math.abs(e.alpha - lastOrientation.alpha);
+                    const deltaBeta = Math.abs(e.beta - lastOrientation.beta);
+                    const deltaGamma = Math.abs(e.gamma - lastOrientation.gamma);
+
+                    if (deltaAlpha > 30 || deltaBeta > 30 || deltaGamma > 30) {
+                        simulateShake();
+                    }
+
+                    lastOrientation = { alpha: e.alpha, beta: e.beta, gamma: e.gamma };
+                };
+
+                window.addEventListener('devicemotion', handleMotion);
+                window.addEventListener('deviceorientation', handleOrientation);
+
+                return () => {
+                    window.removeEventListener('devicemotion', handleMotion);
+                    window.removeEventListener('deviceorientation', handleOrientation);
+                };
+            }, [showCat]);
+
+            useEffect(() => {
+                if (shakeCount >= 10) {
+                    setTimeout(onComplete, 1000);
+                }
+            }, [shakeCount]);
+
+            return (
+                <div className="room-container">
+                    <BackgroundFlowers seed={3} />
+                    {showCat && (
+                        <div style={{
+                            position: 'fixed',
+                            bottom: '20px',
+                            left: '20px',
+                            fontSize: '4rem',
+                            zIndex: 500,
+                            animation: 'catAppear 0.5s ease-out'
+                        }}>
+                            🐱
+                        </div>
+                    )}
+                    <div className="room-content">
+                        <h1 className="room-title">{t.title}</h1>
+                        <p className="room-hint">{t.hint}</p>
+                        <div className="shake-container">
+                            <div className="cloud" style={{ position: 'relative' }}>
+                                ☁️
+                                {/* Частицы вылетают из облака */}
+                                {particles.map(particle => (
+                                    <div
+                                        key={particle.id}
+                                        style={{
+                                            position: 'absolute',
+                                            fontSize: '2rem',
+                                            left: '50%',
+                                            top: '50%',
+                                            transform: 'translate(-50%, -50%)',
+                                            animation: `fallFromCloud 2s ease-in forwards`,
+                                            '--end-x': `${(particle.endLeft - 50) * 2}vw`,
+                                            '--rotation': `${particle.angle}deg`
+                                        }}
+                                    >
+                                        {particle.emoji}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="shake-counter">{t.counter} {shakeCount} / 10</div>
+                            
+                            {/* Кнопка для тестирования */}
+                            <button 
+                                onClick={simulateShake}
+                                style={{
+                                    marginTop: '1rem',
+                                    padding: '10px 20px',
+                                    background: 'rgba(255, 255, 255, 0.2)',
+                                    border: '2px solid rgba(255, 255, 255, 0.4)',
+                                    borderRadius: '10px',
+                                    color: 'white',
+                                    fontSize: '1rem',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                🧪 Тест (тап вместо тряски)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function Room4({ t, onComplete }) {
+            const [buttons, setButtons] = useState([]);
+            const [correctIndex] = useState(4);
+            const [correctClicks, setCorrectClicks] = useState(0);
+
+            useEffect(() => {
+                const colors = [
+                    'linear-gradient(135deg, #667eea, #764ba2)',
+                    'linear-gradient(135deg, #f093fb, #f5576c)',
+                    'linear-gradient(135deg, #4facfe, #00f2fe)',
+                    'linear-gradient(135deg, #43e97b, #38f9d7)',
+                    'linear-gradient(135deg, #fa709a, #fee140)',
+                    'linear-gradient(135deg, #30cfd0, #330867)',
+                    'linear-gradient(135deg, #a8edea, #fed6e3)',
+                    'linear-gradient(135deg, #ff9a9e, #fecfef)',
+                    'linear-gradient(135deg, #ffecd2, #fcb69f)'
+                ];
+                
+                setButtons(colors.map((color, i) => ({
+                    id: i,
+                    color,
+                    emoji: ['🔴', '🟠', '🟡', '🟢', '⭐', '🔵', '🟣', '🟤', '⚪'][i],
+                    correct: i === correctIndex,
+                    position: { x: 0, y: 0 },
+                    permanentPosition: { x: 0, y: 0 }
+                })));
+            }, []);
+
+            const handleButtonClick = (button, index, e) => {
+                e.preventDefault();
+                
+                if (button.correct) {
+                    const newClicks = correctClicks + 1;
+                    setCorrectClicks(newClicks);
+                    
+                    if (newClicks >= 5) {
+                        setTimeout(onComplete, 500);
+                    } else {
+                        // Правильная кнопка убегает в случайное место НАВСЕГДА
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = 100 + Math.random() * 150;
+                        const newX = Math.cos(angle) * distance;
+                        const newY = Math.sin(angle) * distance;
+                        
+                        setButtons(prev => prev.map((b, i) => 
+                            i === index 
+                                ? { 
+                                    ...b, 
+                                    position: { x: newX, y: newY },
+                                    permanentPosition: { x: newX, y: newY }
+                                }
+                                : b
+                        ));
+                    }
+                } else {
+                    // Неправильная кнопка убегает и ВОЗВРАЩАЕТСЯ
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 50 + Math.random() * 100;
+                    const newX = Math.cos(angle) * distance;
+                    const newY = Math.sin(angle) * distance;
+                    
+                    setButtons(prev => prev.map((b, i) => 
+                        i === index 
+                            ? { ...b, position: { x: newX, y: newY } }
+                            : b
+                    ));
+                    
+                    setTimeout(() => {
+                        setButtons(prev => prev.map((b, i) => 
+                            i === index 
+                                ? { ...b, position: b.permanentPosition }
+                                : b
+                        ));
+                    }, 600);
+                }
+            };
+
+            return (
+                <div className="room-container">
+                    <BackgroundFlowers seed={4} />
+                    <div className="room-content">
+                        <h1 className="room-title">{t.title}</h1>
+                        <p className="room-hint">{t.hint}</p>
+                        <div className="buttons-grid">
+                            {buttons.map((button, index) => (
+                                <button
+                                    key={button.id}
+                                    className="game-button"
+                                    style={{
+                                        background: button.color,
+                                        transform: `translate(${button.position.x}px, ${button.position.y}px)`,
+                                        boxShadow: button.correct 
+                                            ? '0 0 20px rgba(255, 215, 0, 0.6)' 
+                                            : '0 5px 15px rgba(0, 0, 0, 0.3)',
+                                        transition: 'transform 0.5s ease-out, box-shadow 0.3s'
+                                    }}
+                                    onClick={(e) => handleButtonClick(button, index, e)}
+                                    onContextMenu={(e) => e.preventDefault()}
+                                >
+                                    {button.emoji}
+                                </button>
+                            ))}
+                        </div>
+                        {correctClicks > 0 && (
+                            <div style={{ 
+                                marginTop: '2rem', 
+                                fontSize: '1.5rem', 
+                                color: '#FFD700',
+                                textShadow: '0 0 10px rgba(255, 215, 0, 0.8)'
+                            }}>
+                                {correctClicks} / 5
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function Room5({ t }) {
+            const [showMessage, setShowMessage] = useState(false);
+            const [confetti, setConfetti] = useState([]);
+
+            const handleClick = () => {
+                setShowMessage(true);
+                
+                const newConfetti = Array.from({ length: 100 }, (_, i) => ({
+                    id: i,
+                    left: Math.random() * 100,
+                    delay: Math.random() * 2,
+                    color: ['#ff6b9d', '#ffc371', '#c471ed', '#12c2e9', '#f093fb'][Math.floor(Math.random() * 5)]
+                }));
+                
+                setConfetti(newConfetti);
+            };
+
+            return (
+                <div className="room-container">
+                    <BackgroundFlowers dense seed={5} />
+                    <div className="room-content">
+                        {!showMessage ? (
+                            <>
+                                <h1 className="room-title">{t.title}</h1>
+                                <div className="final-flower" onClick={handleClick}>🌹</div>
+                            </>
+                        ) : (
+                            <div style={{ textAlign: 'center' }}>
+                                <h1 className="room-title" style={{ fontSize: '3rem' }}>{t.title}</h1>
+                                <p className="room-hint" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+                                    {t.subtitle}
+                                </p>
+                                <p className="room-hint" style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>
+                                    {t.message}
+                                </p>
+                                <div className="final-message">{t.love}</div>
+                                <div style={{ fontSize: '8rem', marginTop: '2rem' }}>🐱✨</div>
+                            </div>
+                        )}
+                        {confetti.map(c => (
+                            <div
+                                key={c.id}
+                                className="confetti"
+                                style={{
+                                    left: `${c.left}%`,
+                                    background: c.color,
+                                    animationDelay: `${c.delay}s`
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function BackgroundFlowers({ dense, seed = 0 }) {
+            const flowers = ['🌸', '🌺', '🌻', '🌷', '🌹'];
+            const count = dense ? 20 : 10;
+            
+            // Use seed to generate consistent random positions
+            const seededRandom = (s) => {
+                const x = Math.sin(s++) * 10000;
+                return x - Math.floor(x);
+            };
+            
+            const flowerPositions = React.useMemo(() => {
+                return Array.from({ length: count }, (_, i) => ({
+                    left: seededRandom(seed * 100 + i * 2) * 100,
+                    top: seededRandom(seed * 100 + i * 2 + 1) * 100,
+                    delay: seededRandom(seed * 100 + i * 2 + 2) * 6,
+                    size: 2 + seededRandom(seed * 100 + i * 2 + 3) * 2,
+                    flower: flowers[Math.floor(seededRandom(seed * 100 + i * 2 + 4) * flowers.length)]
+                }));
+            }, [seed, count]);
+            
+            return (
+                <div className="room-bg">
+                    {flowerPositions.map((pos, i) => (
+                        <div
+                            key={i}
+                            className="flower"
+                            style={{
+                                left: `${pos.left}%`,
+                                top: `${pos.top}%`,
+                                animationDelay: `${pos.delay}s`,
+                                fontSize: `${pos.size}rem`
+                            }}
+                        >
+                            {pos.flower}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
