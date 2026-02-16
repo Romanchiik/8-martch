@@ -3,9 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA / Fullscreen Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
+    <meta name="apple-mobile-web-app-title" content="С 8 Марта">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a2456">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <title>С 8 Марта! 🌸</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -540,22 +551,43 @@
             const [currentRoom, setCurrentRoom] = useState(1);
             const [showTransition, setShowTransition] = useState(false);
             const [isLandscape, setIsLandscape] = useState(true);
+            const [isTelegram, setIsTelegram] = useState(false);
 
             const t = translations[lang];
 
             useEffect(() => {
-                const checkOrientation = () => {
-                    setIsLandscape(window.innerWidth > window.innerHeight);
-                };
-                
-                checkOrientation();
-                window.addEventListener('resize', checkOrientation);
-                window.addEventListener('orientationchange', checkOrientation);
-                
-                return () => {
-                    window.removeEventListener('resize', checkOrientation);
-                    window.removeEventListener('orientationchange', checkOrientation);
-                };
+                // Проверяем, запущено ли в Telegram WebApp
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const tg = window.Telegram.WebApp;
+                    setIsTelegram(true);
+                    
+                    // Разворачиваем на весь экран
+                    tg.expand();
+                    
+                    // Устанавливаем цвет заголовка
+                    tg.setHeaderColor('#1a2456');
+                    tg.setBackgroundColor('#0a1128');
+                    
+                    // Включаем режим закрытия
+                    tg.enableClosingConfirmation();
+                    
+                    // В Telegram всегда landscape режим работает
+                    setIsLandscape(true);
+                } else {
+                    // Обычная проверка ориентации для браузера
+                    const checkOrientation = () => {
+                        setIsLandscape(window.innerWidth > window.innerHeight);
+                    };
+                    
+                    checkOrientation();
+                    window.addEventListener('resize', checkOrientation);
+                    window.addEventListener('orientationchange', checkOrientation);
+                    
+                    return () => {
+                        window.removeEventListener('resize', checkOrientation);
+                        window.removeEventListener('orientationchange', checkOrientation);
+                    };
+                }
             }, []);
 
             const goToNextRoom = () => {
@@ -566,7 +598,8 @@
                 }, 500);
             };
 
-            if (!isLandscape) {
+            // В Telegram не показываем предупреждение о повороте
+            if (!isLandscape && !isTelegram) {
                 return (
                     <div className="rotate-screen">
                         <div className="rotate-icon">📱↻</div>
@@ -973,23 +1006,6 @@
                                 ))}
                             </div>
                             <div className="shake-counter">{t.counter} {shakeCount} / 10</div>
-                            
-                            {/* Кнопка для тестирования */}
-                            <button 
-                                onClick={simulateShake}
-                                style={{
-                                    marginTop: '1rem',
-                                    padding: '10px 20px',
-                                    background: 'rgba(255, 255, 255, 0.2)',
-                                    border: '2px solid rgba(255, 255, 255, 0.4)',
-                                    borderRadius: '10px',
-                                    color: 'white',
-                                    fontSize: '1rem',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                🧪 Тест (тап вместо тряски)
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1208,11 +1224,6 @@
                 </div>
             );
         }
-
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
-</body>
-</html>
 
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
