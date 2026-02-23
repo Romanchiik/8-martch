@@ -330,17 +330,18 @@
         .buttons-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            max-width: 500px;
+            gap: 10px;
+            max-width: 280px;
             margin: 0 auto;
+            justify-items: center;
         }
 
         .game-button {
-            width: 120px;
-            height: 120px;
-            border-radius: 20px;
+            width: 85px;
+            height: 85px;
+            border-radius: 15px;
             border: none;
-            font-size: 2.5rem;
+            font-size: 2rem;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -531,7 +532,7 @@
                 setShowTransition(true);
                 setTimeout(() => {
                     setCurrentRoom(currentRoom + 1);
-                    setTimeout(() => setShowTransition(false), 8000);
+                    setTimeout(() => setShowTransition(false), 5000); // 5 секунд для видео
                 }, 500);
             };
 
@@ -566,26 +567,51 @@
         }
 
         function VideoTransition({ roomNumber }) {
+            const videoRef = useRef(null);
+            
+            // Реальные видео для каждого перехода
+            const videoFiles = {
+                1: 'video_1.mp4',  // После комнаты 1: росток растёт
+                2: 'video_2.mp4',  // После комнаты 2: цветы распускаются
+                3: 'video_3.mp4',  // После комнаты 3: взрыв роста
+                4: 'video_4.mp4',  // После комнаты 4: кот играет
+                5: 'video_5.mp4'   // После комнаты 5: финальный взрыв
+            };
+
+            useEffect(() => {
+                if (videoRef.current) {
+                    videoRef.current.play().catch(err => {
+                        console.log('Autoplay prevented:', err);
+                    });
+                }
+            }, []);
+
             return (
                 <div className="video-transition">
-                    <div className="video-placeholder">
-                        <div className="placeholder-text">🌸 ✨ 💕</div>
-                        <div style={{ marginTop: '1rem', fontSize: '1.2rem', opacity: 0.8 }}>
-                            Transition {roomNumber} (8 sec)
-                        </div>
-                    </div>
+                    <video 
+                        ref={videoRef}
+                        src={videoFiles[roomNumber] || 'video_1.mp4'}
+                        autoPlay
+                        muted
+                        playsInline
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                        }}
+                    />
                 </div>
             );
         }
 
         function Room1({ t, onComplete }) {
-            const [heartPos, setHeartPos] = useState({ x: 200, y: 450 });
+            const [heartPos, setHeartPos] = useState({ x: 200, y: 400 });
             const [isDragging, setIsDragging] = useState(false);
             const [isFlying, setIsFlying] = useState(false);
-            const initialPos = { x: 200, y: 450 };
+            const initialPos = { x: 200, y: 400 };
             const slingshotLeft = 150;
             const slingshotRight = 250;
-            const slingshotY = 500;
+            const slingshotY = 450; // Поднял выше, чтобы совпадало с линией
 
             const handleStart = (e) => {
                 e.preventDefault();
@@ -607,9 +633,8 @@
                 let x = clientX - rect.left;
                 let y = clientY - rect.top;
                 
-                // Оттягивать можно вниз
                 x = Math.max(slingshotLeft, Math.min(x, slingshotRight));
-                y = Math.max(initialPos.y, Math.min(y, 600));
+                y = Math.max(initialPos.y, Math.min(y, 550));
                 
                 setHeartPos({ x, y });
             };
@@ -622,14 +647,12 @@
                 const deltaX = initialPos.x - heartPos.x;
                 const deltaY = initialPos.y - heartPos.y;
                 
-                // Летит ВВЕРХ
                 const finalX = heartPos.x + deltaX * 2;
                 const finalY = heartPos.y + deltaY * 8;
                 
                 setHeartPos({ x: finalX, y: finalY });
                 
                 setTimeout(() => {
-                    // Цветок теперь СВЕРХУ
                     const targetHit = finalX > 120 && finalX < 280 && finalY > 50 && finalY < 150;
                     
                     if (targetHit) {
@@ -646,11 +669,10 @@
             return (
                 <div className="room-container">
                     <BackgroundFlowers seed={1} />
-                    <div className="room-content">
+                    <div className="room-content" style={{ marginTop: '3rem' }}>
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
                         <div className="slingshot-container">
-                            {/* Цветок-цель СВЕРХУ */}
                             <div style={{
                                 position: 'absolute',
                                 left: '50%',
@@ -660,12 +682,11 @@
                                 animation: 'targetPulse 2s ease-in-out infinite'
                             }}>🌺</div>
                             
-                            {/* Основание рогатки ВНИЗУ */}
                             <div 
                                 style={{
                                     position: 'absolute',
                                     left: `${slingshotLeft}px`,
-                                    bottom: '50px',
+                                    top: `${slingshotY}px`,
                                     width: `${slingshotRight - slingshotLeft}px`,
                                     height: '6px',
                                     background: 'linear-gradient(90deg, #654321 0%, #8B4513 100%)',
@@ -673,7 +694,6 @@
                                 }}
                             ></div>
                             
-                            {/* Резинки */}
                             {isDragging && (
                                 <svg 
                                     style={{
@@ -687,7 +707,7 @@
                                 >
                                     <line 
                                         x1={slingshotLeft} 
-                                        y1={slingshotY} 
+                                        y1={slingshotY + 3} 
                                         x2={heartPos.x} 
                                         y2={heartPos.y} 
                                         stroke="#FFD700" 
@@ -695,7 +715,7 @@
                                     />
                                     <line 
                                         x1={slingshotRight} 
-                                        y1={slingshotY} 
+                                        y1={slingshotY + 3} 
                                         x2={heartPos.x} 
                                         y2={heartPos.y} 
                                         stroke="#FFD700" 
@@ -704,7 +724,6 @@
                                 </svg>
                             )}
                             
-                            {/* Сердечко */}
                             <div 
                                 className="heart"
                                 style={{ 
@@ -1046,16 +1065,16 @@
                                 <div className="final-flower" onClick={handleClick}>🌹</div>
                             </>
                         ) : (
-                            <div style={{ textAlign: 'center' }}>
-                                <h1 className="room-title" style={{ fontSize: '3rem' }}>{t.title}</h1>
-                                <p className="room-hint" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+                            <div style={{ textAlign: 'center', padding: '0 1rem' }}>
+                                <h1 className="room-title" style={{ fontSize: 'clamp(2rem, 6vw, 3rem)' }}>{t.title}</h1>
+                                <p className="room-hint" style={{ fontSize: 'clamp(1rem, 3vw, 1.3rem)', marginBottom: '1rem' }}>
                                     {t.subtitle}
                                 </p>
-                                <p className="room-hint" style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>
+                                <p className="room-hint" style={{ fontSize: 'clamp(0.95rem, 2.5vw, 1.2rem)', marginBottom: '1.5rem' }}>
                                     {t.message}
                                 </p>
-                                <div className="final-message">{t.love}</div>
-                                <div style={{ fontSize: '8rem', marginTop: '2rem' }}>🐱✨</div>
+                                <div className="final-message" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)' }}>{t.love}</div>
+                                <div style={{ fontSize: '4rem', marginTop: '1.5rem' }}>🐱✨</div>
                             </div>
                         )}
                         {confetti.map(c => (
