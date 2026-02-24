@@ -11,12 +11,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a2456">
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
     <title>С 8 Марта! 🌸</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -151,6 +145,21 @@
             padding: 1rem;
             position: relative;
             overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .room-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0a1128 0%, #1a2456 50%, #2d3561 100%);
+            opacity: 0.3;
+            z-index: 0;
         }
 
         .room-bg {
@@ -506,34 +515,16 @@
             const [lang, setLang] = useState('ru');
             const [currentRoom, setCurrentRoom] = useState(1);
             const [showTransition, setShowTransition] = useState(false);
-            const [isTelegram, setIsTelegram] = useState(false);
 
             const t = translations[lang];
 
-            useEffect(() => {
-                // Проверяем, запущено ли в Telegram WebApp
-                if (window.Telegram && window.Telegram.WebApp) {
-                    const tg = window.Telegram.WebApp;
-                    setIsTelegram(true);
-                    
-                    // Разворачиваем на весь экран
-                    tg.expand();
-                    
-                    // Устанавливаем цвет заголовка
-                    tg.setHeaderColor('#1a2456');
-                    tg.setBackgroundColor('#0a1128');
-                    
-                    // Включаем режим закрытия
-                    tg.enableClosingConfirmation();
-                }
-            }, []);
-
             const goToNextRoom = () => {
                 setShowTransition(true);
+                
                 setTimeout(() => {
                     setCurrentRoom(currentRoom + 1);
-                    setTimeout(() => setShowTransition(false), 5000); // 5 секунд для видео
-                }, 500);
+                    setShowTransition(false);
+                }, 5000); // 5 секунд на видео
             };
 
             return (
@@ -569,13 +560,13 @@
         function VideoTransition({ roomNumber }) {
             const videoRef = useRef(null);
             
-            // Реальные видео для каждого перехода
+            // Прямые ссылки на видео с GitHub
             const videoFiles = {
-                1: 'video_1.mp4',  // После комнаты 1: росток растёт
-                2: 'video_2.mp4',  // После комнаты 2: цветы распускаются
-                3: 'video_3.mp4',  // После комнаты 3: взрыв роста
-                4: 'video_4.mp4',  // После комнаты 4: кот играет
-                5: 'video_5.mp4'   // После комнаты 5: финальный взрыв
+                1: 'https://raw.githubusercontent.com/Romanchiik/8-martch/main/video_1.mp4',
+                2: 'https://raw.githubusercontent.com/Romanchiik/8-martch/main/video_2.mp4',
+                3: 'https://raw.githubusercontent.com/Romanchiik/8-martch/main/video_3.mp4',
+                4: 'https://raw.githubusercontent.com/Romanchiik/8-martch/main/video_4.mp4',
+                5: 'https://raw.githubusercontent.com/Romanchiik/8-martch/main/video_5.mp4'
             };
 
             useEffect(() => {
@@ -590,7 +581,7 @@
                 <div className="video-transition">
                     <video 
                         ref={videoRef}
-                        src={videoFiles[roomNumber] || 'video_1.mp4'}
+                        src={videoFiles[roomNumber] || videoFiles[1]}
                         autoPlay
                         muted
                         playsInline
@@ -605,13 +596,13 @@
         }
 
         function Room1({ t, onComplete }) {
-            const [heartPos, setHeartPos] = useState({ x: 200, y: 400 });
+            const [heartPos, setHeartPos] = useState({ x: 200, y: 500 });
             const [isDragging, setIsDragging] = useState(false);
             const [isFlying, setIsFlying] = useState(false);
-            const initialPos = { x: 200, y: 400 };
+            const initialPos = { x: 200, y: 500 };
             const slingshotLeft = 150;
             const slingshotRight = 250;
-            const slingshotY = 450; // Поднял выше, чтобы совпадало с линией
+            const slingshotY = 550; // Опустил ниже для удобства
 
             const handleStart = (e) => {
                 e.preventDefault();
@@ -634,7 +625,7 @@
                 let y = clientY - rect.top;
                 
                 x = Math.max(slingshotLeft, Math.min(x, slingshotRight));
-                y = Math.max(initialPos.y, Math.min(y, 550));
+                y = Math.max(initialPos.y, Math.min(y, 650));
                 
                 setHeartPos({ x, y });
             };
@@ -653,7 +644,7 @@
                 setHeartPos({ x: finalX, y: finalY });
                 
                 setTimeout(() => {
-                    const targetHit = finalX > 120 && finalX < 280 && finalY > 50 && finalY < 150;
+                    const targetHit = finalX > 120 && finalX < 280 && finalY > 150 && finalY < 300;
                     
                     if (targetHit) {
                         setTimeout(onComplete, 500);
@@ -667,9 +658,8 @@
             };
 
             return (
-                <div className="room-container">
-                    <BackgroundFlowers seed={1} />
-                    <div className="room-content" style={{ marginTop: '3rem' }}>
+                <div className="room-container" style={{ backgroundImage: 'url(bg_1.png)' }}>
+                    <div className="room-content" style={{ marginTop: '2rem' }}>
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
                         <div className="slingshot-container">
@@ -677,7 +667,7 @@
                                 position: 'absolute',
                                 left: '50%',
                                 transform: 'translateX(-50%)',
-                                top: '80px',
+                                top: '200px',
                                 fontSize: '4rem',
                                 animation: 'targetPulse 2s ease-in-out infinite'
                             }}>🌺</div>
@@ -792,8 +782,7 @@
             const offset = circumference - (progress / 100) * circumference;
 
             return (
-                <div className="room-container">
-                    <BackgroundFlowers seed={2} />
+                <div className="room-container" style={{ backgroundImage: 'url(bg_2.png)' }}>
                     <div className="room-content">
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
@@ -830,18 +819,10 @@
         function Room3({ t, onComplete }) {
             const [tapCount, setTapCount] = useState(0);
             const [particles, setParticles] = useState([]);
-            const [showCat, setShowCat] = useState(false);
 
             const handleTap = () => {
-                setTapCount(prev => {
-                    const newCount = prev + 1;
-                    if (newCount >= 3 && !showCat) {
-                        setShowCat(true);
-                    }
-                    return newCount;
-                });
+                setTapCount(prev => prev + 1);
                 
-                // Частицы вылетают ИЗ ЦЕНТРА облака
                 const newParticles = ['🌸', '🌺', '🌻', '🌷', '💐'].map((emoji, i) => ({
                     id: Date.now() + i,
                     emoji,
@@ -864,20 +845,7 @@
             }, [tapCount]);
 
             return (
-                <div className="room-container">
-                    <BackgroundFlowers seed={3} />
-                    {showCat && (
-                        <div style={{
-                            position: 'fixed',
-                            bottom: '20px',
-                            left: '20px',
-                            fontSize: '4rem',
-                            zIndex: 500,
-                            animation: 'catAppear 0.5s ease-out'
-                        }}>
-                            🐱
-                        </div>
-                    )}
+                <div className="room-container" style={{ backgroundImage: 'url(bg_3.png)' }}>
                     <div className="room-content">
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
@@ -894,7 +862,6 @@
                                 }}
                             >
                                 ☁️
-                                {/* Частицы вылетают из облака */}
                                 {particles.map(particle => (
                                     <div
                                         key={particle.id}
@@ -998,8 +965,7 @@
             };
 
             return (
-                <div className="room-container">
-                    <BackgroundFlowers seed={4} />
+                <div className="room-container" style={{ backgroundImage: 'url(bg_4.png)' }}>
                     <div className="room-content">
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
@@ -1056,8 +1022,7 @@
             };
 
             return (
-                <div className="room-container">
-                    <BackgroundFlowers dense seed={5} />
+                <div className="room-container" style={{ backgroundImage: 'url(bg_5.png)' }}>
                     <div className="room-content">
                         {!showMessage ? (
                             <>
