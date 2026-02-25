@@ -450,6 +450,48 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
+        // Система звуков
+        const sounds = {
+            slingshot: null,
+            hit: null,
+            success: null,
+            cat: null,
+            magic: null,
+            music: null,
+            victory: null
+        };
+
+        // Инициализация звуков
+        function initSounds() {
+            sounds.slingshot = new Audio('https://raw.githubusercontent.com/Romanchiik/8-martch/main/slingshot.wav');
+            sounds.hit = new Audio('https://raw.githubusercontent.com/Romanchiik/8-martch/main/hit.wav');
+            sounds.success = new Audio('https://raw.githubusercontent.com/Romanchiik/8-martch/main/success.wav');
+            sounds.cat = new Audio('https://raw.githubusercontent.com/Romanchiik/8-martch/main/cat.wav');
+            sounds.magic = new Audio('https://raw.githubusercontent.com/Romanchiik/8-martch/main/magic.wav');
+            sounds.music = new Audio('https://raw.githubusercontent.com/Romanchiik/8-martch/main/music.wav');
+            sounds.victory = new Audio('https://raw.githubusercontent.com/Romanchiik/8-martch/main/victory.wav');
+
+            // Громкость
+            sounds.music.volume = 0.15;  // Тихая фоновая музыка
+            sounds.slingshot.volume = 0.4;
+            sounds.hit.volume = 0.5;
+            sounds.success.volume = 0.4;
+            sounds.cat.volume = 0.5;
+            sounds.magic.volume = 0.4;
+            sounds.victory.volume = 0.6;  // Громче для финала
+
+            // Зацикливание фоновой музыки
+            sounds.music.loop = true;
+        }
+
+        // Функция для безопасного воспроизведения
+        function playSound(soundName) {
+            if (sounds[soundName]) {
+                sounds[soundName].currentTime = 0;
+                sounds[soundName].play().catch(err => console.log('Sound play prevented:', err));
+            }
+        }
+
         const translations = {
             ru: {
                 rotate: {
@@ -515,10 +557,38 @@
             const [lang, setLang] = useState('ru');
             const [currentRoom, setCurrentRoom] = useState(1);
             const [showTransition, setShowTransition] = useState(false);
+            const [soundsReady, setSoundsReady] = useState(false);
 
             const t = translations[lang];
 
+            // Инициализация звуков при загрузке
+            useEffect(() => {
+                initSounds();
+                setSoundsReady(true);
+                
+                // Запуск фоновой музыки при первом клике
+                const startMusic = () => {
+                    if (sounds.music && !soundsReady) {
+                        playSound('music');
+                        document.removeEventListener('click', startMusic);
+                        document.removeEventListener('touchstart', startMusic);
+                    }
+                };
+                
+                document.addEventListener('click', startMusic);
+                document.addEventListener('touchstart', startMusic);
+                
+                return () => {
+                    document.removeEventListener('click', startMusic);
+                    document.removeEventListener('touchstart', startMusic);
+                };
+            }, []);
+
             const goToNextRoom = () => {
+                // ЗВУКИ ПЕРЕХОДА
+                playSound('success');
+                setTimeout(() => playSound('magic'), 200);
+                
                 setShowTransition(true);
                 
                 setTimeout(() => {
@@ -574,6 +644,11 @@
                     videoRef.current.play().catch(err => {
                         console.log('Autoplay prevented:', err);
                     });
+                    
+                    // Звук кота в видео 3, 4, 5 (где кот появляется)
+                    if (roomNumber >= 3) {
+                        setTimeout(() => playSound('cat'), 1500);
+                    }
                 }
             }, []);
 
@@ -635,6 +710,9 @@
                 setIsDragging(false);
                 setIsFlying(true);
                 
+                // ЗВУК ВЫСТРЕЛА
+                playSound('slingshot');
+                
                 const deltaX = initialPos.x - heartPos.x;
                 const deltaY = initialPos.y - heartPos.y;
                 
@@ -649,6 +727,8 @@
                     const targetHit = finalX > 120 && finalX < 280 && finalY > 80 && finalY < 200;
                     
                     if (targetHit) {
+                        // ЗВУК ПОПАДАНИЯ
+                        playSound('hit');
                         setTimeout(onComplete, 500);
                     } else {
                         setTimeout(() => {
@@ -1012,6 +1092,9 @@
             const [confetti, setConfetti] = useState([]);
 
             const handleClick = () => {
+                // ЗВУК ПОБЕДЫ
+                playSound('victory');
+                
                 setShowMessage(true);
                 
                 const newConfetti = Array.from({ length: 100 }, (_, i) => ({
@@ -1042,7 +1125,7 @@
                                     {t.message}
                                 </p>
                                 <div className="final-message" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)' }}>{t.love}</div>
-                                <div style={{ fontSize: '4rem', marginTop: '1.5rem' }}></div>
+                                <div style={{ fontSize: '4rem', marginTop: '1.5rem' }}>🐱✨</div>
                             </div>
                         )}
                         {confetti.map(c => (
