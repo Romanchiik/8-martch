@@ -596,13 +596,13 @@
         }
 
         function Room1({ t, onComplete }) {
-            const [heartPos, setHeartPos] = useState({ x: 200, y: 500 });
+            const [heartPos, setHeartPos] = useState({ x: 200, y: 350 });
             const [isDragging, setIsDragging] = useState(false);
             const [isFlying, setIsFlying] = useState(false);
-            const initialPos = { x: 200, y: 500 };
+            const initialPos = { x: 200, y: 350 };
             const slingshotLeft = 150;
             const slingshotRight = 250;
-            const slingshotY = 550; // Опустил ниже для удобства
+            const slingshotY = 400; // Поднял выше
 
             const handleStart = (e) => {
                 e.preventDefault();
@@ -625,7 +625,7 @@
                 let y = clientY - rect.top;
                 
                 x = Math.max(slingshotLeft, Math.min(x, slingshotRight));
-                y = Math.max(initialPos.y, Math.min(y, 650));
+                y = Math.max(initialPos.y, Math.min(y, 500));
                 
                 setHeartPos({ x, y });
             };
@@ -638,13 +638,15 @@
                 const deltaX = initialPos.x - heartPos.x;
                 const deltaY = initialPos.y - heartPos.y;
                 
-                const finalX = heartPos.x + deltaX * 2;
-                const finalY = heartPos.y + deltaY * 8;
+                // СЛАБАЯ рогатка - множители уменьшены
+                const finalX = heartPos.x + deltaX * 1.5;  // было 2
+                const finalY = heartPos.y + deltaY * 4;    // было 8
                 
                 setHeartPos({ x: finalX, y: finalY });
                 
                 setTimeout(() => {
-                    const targetHit = finalX > 120 && finalX < 280 && finalY > 150 && finalY < 300;
+                    // Цветок выше - hitbox тоже выше
+                    const targetHit = finalX > 120 && finalX < 280 && finalY > 80 && finalY < 200;
                     
                     if (targetHit) {
                         setTimeout(onComplete, 500);
@@ -663,11 +665,12 @@
                         <h1 className="room-title">{t.title}</h1>
                         <p className="room-hint">{t.hint}</p>
                         <div className="slingshot-container">
+                            {/* Цветок выше */}
                             <div style={{
                                 position: 'absolute',
                                 left: '50%',
                                 transform: 'translateX(-50%)',
-                                top: '200px',
+                                top: '120px',
                                 fontSize: '4rem',
                                 animation: 'targetPulse 2s ease-in-out infinite'
                             }}>🌺</div>
